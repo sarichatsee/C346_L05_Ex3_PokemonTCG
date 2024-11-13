@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, Image, Animated, Easing } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, Image, Animated, Easing, PanResponder } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './AppStyles';
 import pokemonData from './pokemonData';
@@ -25,10 +25,32 @@ const App = () => {
   const [selectedTypes, setSelectedTypes] = useState({});
   const [spotlightPokemon, setSpotlightPokemon] = useState(null);
 
-  // Animation references
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const slideUpAnim = useRef(new Animated.Value(300)).current;
   const closeButtonOpacity = useRef(new Animated.Value(0)).current;
+
+  const holoTranslateX = useRef(new Animated.Value(50)).current;
+  const holoTranslateY = useRef(new Animated.Value(50)).current;
+  const tiltX = useRef(new Animated.Value(0)).current;
+  const tiltY = useRef(new Animated.Value(0)).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (evt, gestureState) => {
+        const { moveX, moveY } = gestureState;
+        const tiltStrength = 15;
+        tiltX.setValue(((moveX / 300) - 0.5) * tiltStrength);
+        tiltY.setValue(((moveY / 420) - 0.5) * tiltStrength);
+        holoTranslateX.setValue(moveX / 2);
+        holoTranslateY.setValue(moveY / 2);
+      },
+      onPanResponderRelease: () => {
+        Animated.spring(tiltX, { toValue: 0, useNativeDriver: true }).start();
+        Animated.spring(tiltY, { toValue: 0, useNativeDriver: true }).start();
+      },
+    })
+  ).current;
 
   const toggleSearch = () => {
     setIsSearching(!isSearching);
@@ -53,8 +75,6 @@ const App = () => {
 
   const handleCardClick = (pokemon) => {
     setSpotlightPokemon(pokemon);
-    
-    // Start overlay fade-in and slide-up animation
     Animated.parallel([
       Animated.timing(overlayOpacity, {
         toValue: 1,
@@ -77,7 +97,6 @@ const App = () => {
   };
 
   const closeSpotlight = () => {
-    // Start close button fade-out and slide-down animation
     Animated.parallel([
       Animated.timing(closeButtonOpacity, {
         toValue: 0,
@@ -96,7 +115,7 @@ const App = () => {
         delay: 200,
         useNativeDriver: true,
       })
-    ]).start(() => setSpotlightPokemon(null)); // Reset spotlightPokemon after animation
+    ]).start(() => setSpotlightPokemon(null));
   };
 
   const filteredPokemonData = pokemonData
@@ -116,7 +135,6 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      {/* Gray Background Header with My Cards, Filter Button, Card Counter, and Search Bar */}
       <View style={styles.headerContainer}>
         <View style={styles.headerTopRow}>
           <Text style={styles.title}>My Cards</Text>
@@ -127,9 +145,7 @@ const App = () => {
         <View style={styles.headerBottomRow}>
           <View style={styles.cardCount}>
             <FontAwesome name="book" size={18} color="#333" style={styles.bookIcon} />
-            <Text style={styles.cardCountText}>
-              {filteredPokemonData.length}
-            </Text>
+            <Text style={styles.cardCountText}>{filteredPokemonData.length}</Text>
           </View>
           {isSearching && (
             <TextInput
@@ -146,22 +162,43 @@ const App = () => {
         </View>
       </View>
 
-      {/* Pokémon Card Grid in White Background */}
       <View style={styles.cardGridContainer}>
         <FlatList
           data={filteredPokemonData}
-          numColumns={3} // Grid view with 3 columns
+          numColumns={3}
           renderItem={renderPokemon}
           keyExtractor={(item) => item.name}
           contentContainerStyle={styles.cardContainer}
         />
       </View>
 
-      {/* Spotlight Modal */}
       {spotlightPokemon && (
         <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
-          <Animated.View style={[styles.spotlightContainer, { transform: [{ translateY: slideUpAnim }] }]}>
+          <Animated.View
+            style={[
+              styles.spotlightContainer,
+              {
+                transform: [
+                  { translateY: slideUpAnim },
+                  { perspective: 1000 },
+                  { rotateX: tiltY.interpolate({ inputRange: [-10, 10], outputRange: ['-10deg', '10deg'] }) },
+                  { rotateY: tiltX.interpolate({ inputRange: [-10, 10], outputRange: ['-10deg', '10deg'] }) },
+                ],
+              },
+            ]}
+            {...panResponder.panHandlers}
+          >
             <Image source={{ uri: spotlightPokemon.imageUrl }} style={styles.spotlightImage} />
+            <Animated.View
+              style={[
+                styles.holoEffect,
+                {
+                  top: holoTranslateY,
+                  left: holoTranslateX,
+                  opacity: 0.4,
+                },
+              ]}
+            />
             <Animated.View style={{ opacity: closeButtonOpacity }}>
               <TouchableOpacity onPress={closeSpotlight} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Close</Text>
@@ -171,7 +208,6 @@ const App = () => {
         </Animated.View>
       )}
 
-      {/* Filter Modal */}
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <ScrollView contentContainerStyle={styles.modalContent}>

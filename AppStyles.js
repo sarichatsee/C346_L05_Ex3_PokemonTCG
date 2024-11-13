@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingTop: 40,
     paddingBottom: 20,
-    backgroundColor: '#e0e0e0', // Gray background for the header
+    backgroundColor: '#e0e0e0',
     paddingVertical: 10,
     paddingHorizontal: 20,
     width: '100%',
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   cardGridContainer: {
     flex: 1,
-    backgroundColor: '#ffffff', // White background for the card grid
+    backgroundColor: '#ffffff',
     paddingHorizontal: 10,
     alignItems: 'center',
   },
@@ -88,14 +88,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   spotlightContainer: {
-    width: '90%',
-    alignItems: 'center',
-    borderRadius: 10,
-    padding: 20,
-  },
-  spotlightImage: {
     width: 300,
     height: 420,
+    alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  spotlightImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  holoEffect: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    opacity: 0.75,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundSize: '200% 200%',
+    backgroundImage:
+      'linear-gradient(115deg, rgba(0,231,255,0.5) 0%, rgba(255,0,231,0.5) 100%), url("https://assets.codepen.io/13471/holo.png"), url("https://assets.codepen.io/13471/sparkles.gif")',
+    mixBlendMode: 'color-dodge',
   },
   closeButton: {
     marginTop: 20,
