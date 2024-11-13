@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, SectionList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, Image } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './AppStyles';
 import pokemonData from './pokemonData';
@@ -23,6 +23,7 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState({});
+  const [spotlightPokemon, setSpotlightPokemon] = useState(null);
 
   const toggleSearch = () => {
     setIsSearching(!isSearching);
@@ -45,62 +46,88 @@ const App = () => {
     }));
   };
 
-  // Filter Pokémon sections based on selected types and search query
+  const handleCardClick = (pokemon) => {
+    setSpotlightPokemon(pokemon);
+  };
+
+  const closeSpotlight = () => {
+    setSpotlightPokemon(null);
+  };
+
+  // Flattened and filtered Pokémon data based on selected types and search query
   const filteredPokemonData = pokemonData
     .filter((section) => !Object.keys(selectedTypes).some((type) => selectedTypes[type]) || selectedTypes[section.title])
-    .map((section) => ({
-      ...section,
-      data: section.data.filter((pokemon) =>
+    .reduce((acc, section) => {
+      const filteredSectionData = section.data.filter((pokemon) =>
         pokemon.name && pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    }))
-    .filter((section) => section.data.length > 0); // Remove sections with no matching Pokémon
-
-  const renderSectionHeader = ({ section }) => (
-    <View style={[styles.header, { backgroundColor: section.color }]}>
-      <Text style={styles.headerText}>{section.icon} {section.title}</Text>
-    </View>
-  );
+      );
+      return acc.concat(filteredSectionData);
+    }, []);
 
   const renderPokemon = ({ item }) => (
-    <View style={styles.pokemonCard}>
-      <Text style={styles.pokemonName}>{item.name}</Text>
+    <TouchableOpacity style={styles.pokemonCard} onPress={() => handleCardClick(item)}>
       <Image source={{ uri: item.imageUrl }} style={styles.pokemonImage} />
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>My Cards</Text>
-
-      <View style={styles.controlRow}>
-        <View style={styles.cardCount}>
-          <FontAwesome name="book" size={18} color="#333" style={styles.bookIcon} />
-          <Text style={styles.cardCountText}>{filteredPokemonData.reduce((acc, section) => acc + section.data.length, 0)}</Text>
+      {/* Gray Background Header with My Cards, Filter Button, Card Counter, and Search Bar */}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerTopRow}>
+          <Text style={styles.title}>My Cards</Text>
+          <TouchableOpacity onPress={toggleFilterModal} style={styles.filterButton}>
+            <FontAwesome name="filter" size={24} color="#333" />
+          </TouchableOpacity>
         </View>
-
-        {isSearching && (
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search Pokémon"
-            value={searchQuery}
-            onChangeText={handleSearch}
-            autoFocus={true}
-          />
-        )}
-
-        <TouchableOpacity onPress={toggleSearch}>
-          <FontAwesome name="search" size={24} color="#333" style={styles.searchIcon} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={toggleFilterModal} style={styles.filterButton}>
-          <FontAwesome name="filter" size={24} color="#333" />
-        </TouchableOpacity>
+        <View style={styles.headerBottomRow}>
+          <View style={styles.cardCount}>
+            <FontAwesome name="book" size={18} color="#333" style={styles.bookIcon} />
+            <Text style={styles.cardCountText}>
+              {filteredPokemonData.length}
+            </Text>
+          </View>
+          {isSearching && (
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search Pokémon"
+              value={searchQuery}
+              onChangeText={handleSearch}
+              autoFocus={true}
+            />
+          )}
+          <TouchableOpacity onPress={toggleSearch}>
+            <FontAwesome name="search" size={24} color="#333" style={styles.searchIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
 
+      {/* Pokémon Card Grid in White Background */}
+      <View style={styles.cardGridContainer}>
+        <FlatList
+          data={filteredPokemonData}
+          numColumns={3} // Grid view with 3 columns
+          renderItem={renderPokemon}
+          keyExtractor={(item) => item.name}
+          contentContainerStyle={styles.cardContainer}
+        />
+      </View>
+
+      {/* Spotlight Modal */}
+      <Modal visible={!!spotlightPokemon} transparent={true} animationType="slide">
+        {spotlightPokemon && (
+          <View style={styles.spotlightContainer}>
+            <Image source={{ uri: spotlightPokemon.imageUrl }} style={styles.spotlightImage} />
+            <TouchableOpacity onPress={closeSpotlight} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </Modal>
+
+      {/* Filter Modal */}
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Filter by Element Type</Text>
           <ScrollView contentContainerStyle={styles.modalContent}>
             {elementTypes.map((element) => (
               <View key={element.name} style={[styles.filterOption, { borderColor: element.color }]}>

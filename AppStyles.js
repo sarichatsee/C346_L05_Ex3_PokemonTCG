@@ -1,35 +1,40 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-    
   container: {
-    padding: 10,
-    backgroundColor: '#f0f5ff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  headerContainer: {
+    paddingTop: 40,
+    paddingBottom: 20,
+    backgroundColor: '#e0e0e0', // Gray background for the header
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    width: '100%',
+  },
+  headerTopRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerBottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
   },
   title: {
-    marginTop: 30,
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 10,
-  },
-  controlRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    justifyContent: 'space-around',
   },
   cardCount: {
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
     padding: 5,
     borderRadius: 5,
-    width: 70,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   bookIcon: {
     marginRight: 5,
@@ -48,33 +53,61 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: '#fff',
     borderRadius: 5,
-    marginLeft: 10,
     flex: 1,
   },
   filterButton: {
-    position: 'absolute',
-    right: 10,
-    top: 60,
-    backgroundColor: '#fff',
     padding: 8,
     borderRadius: 20,
-    elevation: 3,
+  },
+  cardGridContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff', // White background for the card grid
+    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+  pokemonCard: {
+    margin: 8,
+    width: 150,
+    height: 'auto',
+  },
+  pokemonImage: {
+    width: '100%',
+    height: '100%',
+  },
+  cardContainer: {
+    paddingVertical: 10,
+  },
+  spotlightContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  spotlightImage: {
+    width: 300,
+    height: 400,
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: '#007BFF',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   modalContainer: {
-    backgroundColor: 'white', // Black background for the modal itself
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', // Add a shadow to the modal
+    backgroundColor: 'white',
     borderRadius: 10,
     width: '90%',
     padding: 20,
     alignItems: 'center',
-    alignSelf: 'center', // Center horizontally
-    marginTop: '50%', // Position in the middle of the screen
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#fff', // White color for text on black background
+    alignSelf: 'center',
+    marginTop: '50%',
   },
   modalContent: {
     flexDirection: 'row',
@@ -88,29 +121,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 5,
     margin: 5,
-    borderColor: '#fff', // White border for options for visibility on black background
   },
   filterLabel: {
     fontSize: 16,
     marginRight: 5,
-    color: '#fff', // White color for text on black background
-  },
-  closeButton: {
-    marginTop: 15,
-    backgroundColor: '#007BFF',
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  cardContainer: {
-    marginTop: 90,
-    width: '100%',
-    backgroundColor: '#fff',
   },
 });
 

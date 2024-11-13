@@ -6,12 +6,16 @@ const pokemonData = [
       data: [
         {
           name: 'Squirtle',
-          imageUrl: 'https://dz3we2x72f7ol.cloudfront.net/expansions/151/en-us/SV3pt5_EN_63-2x.png',
+          imageUrl: 'https://img.game8.co/3995576/fdbc69a9416a23429a33d8b7bddabecc.png/show',
         },
         {
-          name: 'Psyduck',
-          imageUrl: 'https://dz3we2x72f7ol.cloudfront.net/expansions/151/en-us/SV3pt5_EN_23-2x.png',
+          name: 'Lapras',
+          imageUrl: 'https://img.game8.co/3995546/5565a86b915faf786b67c13bce355030.png/show',
         },
+        {
+          name: 'Gyarados',
+          imageUrl: 'https://img.game8.co/4003510/43149edce21c416e7bfc25466f4a50d8.png/show',
+        }
       ],
     },
     {
@@ -49,7 +53,7 @@ const pokemonData = [
       ],
     },
     {
-        title: 'Electric',
+        title: 'Lightning',
         icon: '⚡',
         color: '#FFD700',
         data: [
