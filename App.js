@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, SectionList, Image } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './AppStyles';
+import pokemonData from './pokemonData';
 
 const elementTypes = [
   { name: 'Colorless', color: '#CCCCCC' },
@@ -44,6 +45,30 @@ const App = () => {
     }));
   };
 
+  // Filter Pokémon sections based on selected types and search query
+  const filteredPokemonData = pokemonData
+    .filter((section) => !Object.keys(selectedTypes).some((type) => selectedTypes[type]) || selectedTypes[section.title])
+    .map((section) => ({
+      ...section,
+      data: section.data.filter((pokemon) =>
+        pokemon.name && pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    }))
+    .filter((section) => section.data.length > 0); // Remove sections with no matching Pokémon
+
+  const renderSectionHeader = ({ section }) => (
+    <View style={[styles.header, { backgroundColor: section.color }]}>
+      <Text style={styles.headerText}>{section.icon} {section.title}</Text>
+    </View>
+  );
+
+  const renderPokemon = ({ item }) => (
+    <View style={styles.pokemonCard}>
+      <Text style={styles.pokemonName}>{item.name}</Text>
+      <Image source={{ uri: item.imageUrl }} style={styles.pokemonImage} />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>My Cards</Text>
@@ -51,7 +76,7 @@ const App = () => {
       <View style={styles.controlRow}>
         <View style={styles.cardCount}>
           <FontAwesome name="book" size={18} color="#333" style={styles.bookIcon} />
-          <Text style={styles.cardCountText}>280</Text>
+          <Text style={styles.cardCountText}>{filteredPokemonData.reduce((acc, section) => acc + section.data.length, 0)}</Text>
         </View>
 
         {isSearching && (
@@ -73,7 +98,6 @@ const App = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal without Overlay */}
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Filter by Element Type</Text>
@@ -96,6 +120,15 @@ const App = () => {
           </TouchableOpacity>
         </View>
       </Modal>
+      {/* Display Filtered Pokémon List 
+      <SectionList
+        sections={filteredPokemonData}
+        keyExtractor={(item) => item.name}
+        renderSectionHeader={renderSectionHeader}
+        renderItem={renderPokemon}
+        contentContainerStyle={styles.pokemonList}
+      /> */}
+
     </View>
   );
 };

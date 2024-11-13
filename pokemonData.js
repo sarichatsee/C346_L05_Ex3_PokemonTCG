@@ -63,7 +63,7 @@ const pokemonData = [
             {
                 name: 'Jolteon',
                 imageUrl: 'https://img.game8.co/4006822/ed62f5a9def93af10a971be762d7c72f.png/show',
-            }
+            },
         ]
     },
   ];
