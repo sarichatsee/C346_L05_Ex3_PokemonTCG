@@ -99,18 +99,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 8,
   },
-  holoEffect: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-    opacity: 0.75,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    backgroundSize: '200% 200%',
-    backgroundImage:
-      'linear-gradient(115deg, rgba(0,231,255,0.5) 0%, rgba(255,0,231,0.5) 100%), url("https://assets.codepen.io/13471/holo.png"), url("https://assets.codepen.io/13471/sparkles.gif")',
-    mixBlendMode: 'color-dodge',
-  },
   closeButton: {
     marginTop: 20,
     backgroundColor: '#007BFF',
@@ -151,4 +139,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export default styles;WHY
+
