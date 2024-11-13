@@ -77,16 +77,25 @@ const styles = StyleSheet.create({
   cardContainer: {
     paddingVertical: 10,
   },
-  spotlightContainer: {
-    flex: 1,
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  spotlightContainer: {
+    width: '90%',
+    alignItems: 'center',
+    borderRadius: 10,
+    padding: 20,
   },
   spotlightImage: {
     width: 300,
     height: 420,
-    marginBottom: 10,
   },
   closeButton: {
     marginTop: 20,

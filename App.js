@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, Image } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, Image, Animated, Easing } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './AppStyles';
 import pokemonData from './pokemonData';
@@ -25,6 +25,11 @@ const App = () => {
   const [selectedTypes, setSelectedTypes] = useState({});
   const [spotlightPokemon, setSpotlightPokemon] = useState(null);
 
+  // Animation references
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const slideUpAnim = useRef(new Animated.Value(300)).current;
+  const closeButtonOpacity = useRef(new Animated.Value(0)).current;
+
   const toggleSearch = () => {
     setIsSearching(!isSearching);
     setSearchQuery('');
@@ -48,13 +53,52 @@ const App = () => {
 
   const handleCardClick = (pokemon) => {
     setSpotlightPokemon(pokemon);
+    
+    // Start overlay fade-in and slide-up animation
+    Animated.parallel([
+      Animated.timing(overlayOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideUpAnim, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(closeButtonOpacity, {
+        toValue: 1,
+        duration: 400,
+        delay: 300,
+        useNativeDriver: true,
+      })
+    ]).start();
   };
 
   const closeSpotlight = () => {
-    setSpotlightPokemon(null);
+    // Start close button fade-out and slide-down animation
+    Animated.parallel([
+      Animated.timing(closeButtonOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideUpAnim, {
+        toValue: 300,
+        duration: 500,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        duration: 300,
+        delay: 200,
+        useNativeDriver: true,
+      })
+    ]).start(() => setSpotlightPokemon(null)); // Reset spotlightPokemon after animation
   };
 
-  // Flattened and filtered Pokémon data based on selected types and search query
   const filteredPokemonData = pokemonData
     .filter((section) => !Object.keys(selectedTypes).some((type) => selectedTypes[type]) || selectedTypes[section.title])
     .reduce((acc, section) => {
@@ -114,16 +158,18 @@ const App = () => {
       </View>
 
       {/* Spotlight Modal */}
-      <Modal visible={!!spotlightPokemon} transparent={true} animationType="slide">
-        {spotlightPokemon && (
-          <View style={styles.spotlightContainer}>
+      {spotlightPokemon && (
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
+          <Animated.View style={[styles.spotlightContainer, { transform: [{ translateY: slideUpAnim }] }]}>
             <Image source={{ uri: spotlightPokemon.imageUrl }} style={styles.spotlightImage} />
-            <TouchableOpacity onPress={closeSpotlight} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </Modal>
+            <Animated.View style={{ opacity: closeButtonOpacity }}>
+              <TouchableOpacity onPress={closeSpotlight} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </Animated.View>
+        </Animated.View>
+      )}
 
       {/* Filter Modal */}
       <Modal visible={isModalVisible} transparent={true} animationType="slide">
