@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    marginTop: 30,
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
@@ -105,6 +106,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  cardContainer: {
+    marginTop: 90,
+    width: '100%',
+    backgroundColor: '#fff',
   },
 });
 

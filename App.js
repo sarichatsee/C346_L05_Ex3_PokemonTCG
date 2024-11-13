@@ -120,15 +120,6 @@ const App = () => {
           </TouchableOpacity>
         </View>
       </Modal>
-      {/* Display Filtered Pokémon List 
-      <SectionList
-        sections={filteredPokemonData}
-        keyExtractor={(item) => item.name}
-        renderSectionHeader={renderSectionHeader}
-        renderItem={renderPokemon}
-        contentContainerStyle={styles.pokemonList}
-      /> */}
-
     </View>
   );
 };
