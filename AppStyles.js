@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
   },
   pokemonCard: {
     margin: 8,
-    width: 150,
-    height: 'auto',
+    width: 100,
+    height: 140,
   },
   pokemonImage: {
     width: '100%',
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   spotlightImage: {
     width: 300,
-    height: 400,
+    height: 420,
     marginBottom: 10,
   },
   closeButton: {
