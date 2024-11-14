@@ -60,10 +60,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   cardGridContainer: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 10,
-    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   pokemonCard: {
     margin: 8,
@@ -74,8 +73,16 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  cardContainer: {
+  sectionHeader: {
     paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionHeaderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   overlay: {
     position: 'absolute',
@@ -92,15 +99,32 @@ const styles = StyleSheet.create({
     height: 420,
     alignItems: 'center',
     borderRadius: 10,
-    overflow: 'hidden',
   },
   spotlightImage: {
     width: '100%',
     height: '100%',
     borderRadius: 8,
   },
+  infoBox: {
+    bottom: 20,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 50,
+    width: '80%',
+  },
+  pokemonElement: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  pokemonName: {
+    fontSize: 14,
+    color: '#333',
+  },
   closeButton: {
-    marginTop: 20,
     backgroundColor: '#007BFF',
     paddingVertical: 8,
     paddingHorizontal: 20,
@@ -111,33 +135,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  modalContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    width: '90%',
-    padding: 20,
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: '50%',
-  },
-  modalContent: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  filterOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 5,
-    margin: 5,
-  },
-  filterLabel: {
-    fontSize: 16,
-    marginRight: 5,
-  },
 });
 
-export default styles;WHY
-
+export default styles;

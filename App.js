@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, Image, Animated, Easing, PanResponder } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView, FlatList, SectionList, Image, Animated, Easing, PanResponder } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './AppStyles';
 import pokemonData from './pokemonData';
@@ -28,9 +28,6 @@ const App = () => {
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const slideUpAnim = useRef(new Animated.Value(300)).current;
   const closeButtonOpacity = useRef(new Animated.Value(0)).current;
-
-  const holoTranslateX = useRef(new Animated.Value(50)).current;
-  const holoTranslateY = useRef(new Animated.Value(50)).current;
   const tiltX = useRef(new Animated.Value(0)).current;
   const tiltY = useRef(new Animated.Value(0)).current;
 
@@ -42,8 +39,6 @@ const App = () => {
         const tiltStrength = 15;
         tiltX.setValue(((moveX / 300) - 0.5) * tiltStrength);
         tiltY.setValue(((moveY / 420) - 0.5) * tiltStrength);
-        holoTranslateX.setValue(moveX / 2);
-        holoTranslateY.setValue(moveY / 2);
       },
       onPanResponderRelease: () => {
         Animated.spring(tiltX, { toValue: 0, useNativeDriver: true }).start();
@@ -58,8 +53,7 @@ const App = () => {
   };
 
   const handleSearch = (query) => {
-    const alphabeticQuery = query.replace(/[^a-zA-Z]/g, '');
-    setSearchQuery(alphabeticQuery);
+    setSearchQuery(query);
   };
 
   const toggleFilterModal = () => {
@@ -73,8 +67,8 @@ const App = () => {
     }));
   };
 
-  const handleCardClick = (pokemon) => {
-    setSpotlightPokemon(pokemon);
+  const handleCardClick = (pokemon, element) => {
+    setSpotlightPokemon({ ...pokemon, element }); // Add the element to spotlightPokemon
     Animated.parallel([
       Animated.timing(overlayOpacity, {
         toValue: 1,
@@ -118,19 +112,31 @@ const App = () => {
     ]).start(() => setSpotlightPokemon(null));
   };
 
-  const filteredPokemonData = pokemonData
-    .filter((section) => !Object.keys(selectedTypes).some((type) => selectedTypes[type]) || selectedTypes[section.title])
-    .reduce((acc, section) => {
-      const filteredSectionData = section.data.filter((pokemon) =>
+  const filteredData = pokemonData
+    .filter(section => !Object.keys(selectedTypes).some(type => selectedTypes[type]) || selectedTypes[section.title])
+    .map(section => ({
+      ...section,
+      data: section.data.filter(pokemon =>
         pokemon.name && pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      return acc.concat(filteredSectionData);
-    }, []);
+      ),
+    }))
+    .filter(section => section.data.length > 0);
 
-  const renderPokemon = ({ item }) => (
-    <TouchableOpacity style={styles.pokemonCard} onPress={() => handleCardClick(item)}>
-      <Image source={{ uri: item.imageUrl }} style={styles.pokemonImage} />
-    </TouchableOpacity>
+  const renderPokemonSection = ({ section }) => (
+    <View style={styles.sectionContainer}>
+      <Text style={[styles.sectionHeaderText, { backgroundColor: section.color }]}>{section.title}</Text>
+      <FlatList
+        data={section.data}
+        numColumns={3}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.pokemonCard} onPress={() => handleCardClick(item, section.title)}>
+            <Image source={{ uri: item.imageUrl }} style={styles.pokemonImage} />
+          </TouchableOpacity>
+        )}
+        keyExtractor={item => item.name}
+        contentContainerStyle={styles.cardContainer}
+      />
+    </View>
   );
 
   return (
@@ -145,7 +151,7 @@ const App = () => {
         <View style={styles.headerBottomRow}>
           <View style={styles.cardCount}>
             <FontAwesome name="book" size={18} color="#333" style={styles.bookIcon} />
-            <Text style={styles.cardCountText}>{filteredPokemonData.length}</Text>
+            <Text style={styles.cardCountText}>{filteredData.reduce((acc, section) => acc + section.data.length, 0)}</Text>
           </View>
           {isSearching && (
             <TextInput
@@ -162,15 +168,12 @@ const App = () => {
         </View>
       </View>
 
-      <View style={styles.cardGridContainer}>
-        <FlatList
-          data={filteredPokemonData}
-          numColumns={3}
-          renderItem={renderPokemon}
-          keyExtractor={(item) => item.name}
-          contentContainerStyle={styles.cardContainer}
-        />
-      </View>
+      <SectionList
+        sections={filteredData}
+        keyExtractor={(item, index) => item.name + index}
+        renderSectionHeader={renderPokemonSection}
+        renderItem={() => null} // Do not render default items
+      />
 
       {spotlightPokemon && (
         <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
@@ -189,16 +192,10 @@ const App = () => {
             {...panResponder.panHandlers}
           >
             <Image source={{ uri: spotlightPokemon.imageUrl }} style={styles.spotlightImage} />
-            <Animated.View
-              style={[
-                styles.holoEffect,
-                {
-                  top: holoTranslateY,
-                  left: holoTranslateX,
-                  opacity: 0.4,
-                },
-              ]}
-            />
+            <View style={styles.infoBox}>
+              <Text style={styles.pokemonElement}>Element: {spotlightPokemon.element}</Text>
+              <Text style={styles.pokemonName}>Name: {spotlightPokemon.name}</Text>
+            </View>
             <Animated.View style={{ opacity: closeButtonOpacity }}>
               <TouchableOpacity onPress={closeSpotlight} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Close</Text>
